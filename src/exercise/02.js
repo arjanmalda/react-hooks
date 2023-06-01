@@ -4,30 +4,52 @@
 import * as React from 'react'
 
 function Greeting({initialName = ''}) {
-  // 🐨 initialize the state to the value from localStorage
-  // 💰 window.localStorage.getItem('name') ?? initialName
-  const [name, setName] = React.useState(initialName)
-
-  // 🐨 Here's where you'll use `React.useEffect`.
-  // The callback should set the `name` in localStorage.
-  // 💰 window.localStorage.setItem('name', name)
+  const {value, setValue} = useLocalStorageState(initialName)
 
   function handleChange(event) {
-    setName(event.target.value)
+    setValue(event.target.value)
   }
+
   return (
     <div>
       <form>
         <label htmlFor="name">Name: </label>
-        <input value={name} onChange={handleChange} id="name" />
+        <input value={value} onChange={handleChange} id="name" />
       </form>
-      {name ? <strong>Hello {name}</strong> : 'Please type your name'}
+      {value ? <strong>Hello </strong> : 'Please type your name'}
     </div>
   )
 }
 
+function useLocalStorageState(initialValue) {
+  const [value, setValue] = React.useState(() => {
+    return {greeting: 'Hello world'}
+  })
+
+  React.useEffect(() => {
+    const valueForLocalStorage =
+      typeof value === 'function' ||
+      typeof value === 'object' ||
+      typeof value === 'symbol'
+        ? JSON.stringify({...value, stringified: true})
+        : value
+
+    window.localStorage.setItem('value', valueForLocalStorage)
+  }, [value])
+
+  if (value.prototype?.hasOwnProperty.call(value, 'stringified')) {
+  }
+
+  return {
+    value: value.prototype?.hasOwnProperty.call(value, 'stringified')
+      ? value[Object.keys(value)[0]]
+      : value,
+    setValue,
+  }
+}
+
 function App() {
-  return <Greeting />
+  return <Greeting initialName="Arjan" />
 }
 
 export default App
