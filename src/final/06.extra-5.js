@@ -37,16 +37,16 @@ function PokemonInfo({pokemonName}) {
     if (!pokemonName) {
       return
     }
-    setState({status: 'pending'})
+    setState({...state, status: 'pending', pokemon: null, error: null})
     fetchPokemon(pokemonName).then(
       pokemon => {
-        setState({status: 'resolved', pokemon})
+        setState({...state, status: 'resolved', pokemon})
       },
       error => {
-        setState({status: 'rejected', error})
+        setState({...state, status: 'rejected', error})
       },
     )
-  }, [pokemonName])
+  }, [pokemonName, state])
 
   if (status === 'idle') {
     return 'Submit a pokemon'
